@@ -49,13 +49,11 @@ func (et ExecuterTask) Execute(workerId int) TaskResult {
 
 	recievingFirst := time.Now()
 
-	data, err := io.ReadAll(res.Body)
+	_, err = io.ReadAll(res.Body)
 
 	if err != nil {
 		log.Fatalf("Error : %s \n", err.Error())
 	}
-
-	log.Println(string(data))
 
 	return Result{
 		statusCode:      res.StatusCode,
