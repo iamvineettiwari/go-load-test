@@ -23,6 +23,13 @@ func (et ExecuterTask) Execute(workerId int) TaskResult {
 	request := et.requestInfo
 
 	body := bytes.NewReader(request.Body)
+
+	client := http.Client{
+		CheckRedirect: func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
 	req, err := http.NewRequest(request.Method, request.Url, body)
 
 	if err != nil {
@@ -39,7 +46,7 @@ func (et ExecuterTask) Execute(workerId int) TaskResult {
 		req.Header.Set(key, value)
 	}
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := client.Do(req)
 
 	if err != nil {
 		log.Fatalf("Error : %s \n", err.Error())
