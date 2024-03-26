@@ -28,6 +28,11 @@ func (et ExecuterTask) Execute(workerId int) TaskResult {
 		CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
+		Transport: &http.Transport{
+			DisableKeepAlives:   true,
+			MaxIdleConns:        0,
+			MaxIdleConnsPerHost: 0,
+		},
 	}
 
 	req, err := http.NewRequest(request.Method, request.Url, body)
@@ -56,7 +61,7 @@ func (et ExecuterTask) Execute(workerId int) TaskResult {
 
 	recievingFirst := time.Now()
 
-	_, err = io.ReadAll(res.Body)
+	_, err = io.Copy(io.Discard, res.Body)
 
 	if err != nil {
 		log.Fatalf("Error : %s \n", err.Error())
